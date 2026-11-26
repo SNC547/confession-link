@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>有一句话想对你说</title>
+<meta name="theme-color" content="#ffeef3">
+<style>
+  :root{
+    --pink:#ff5c8a;
+    --deep:#4a2c37;
+    --soft:#8c6b77;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+    color:var(--deep);
+    background:
+      radial-gradient(120% 80% at 50% 0%, #fff9fb 0%, #ffe9f0 45%, #ffdfe9 100%);
+    overflow:hidden;
+    position:fixed;inset:0;
+    -webkit-font-smoothing:antialiased;
+  }
+  #heartsBg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+  #heartsBg i{
+    position:absolute;bottom:-40px;display:block;
+    color:#ffb3c9;opacity:0;
+    font-style:normal;line-height:1;
+    animation:floatUp linear infinite;
+    will-change:transform,opacity;
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(0) scale(.7) rotate(0deg);opacity:0}
+    12%{opacity:.85}
+    85%{opacity:.5}
+    100%{transform:translateY(-115vh) scale(1) rotate(28deg);opacity:0}
+  }
+
+  .stage{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    padding-top:calc(24px + env(safe-area-inset-top));
+    padding-bottom:calc(24px + env(safe-area-inset-bottom));
+    transition:opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
+  }
+  .stage.hide{opacity:0;transform:scale(.96);pointer-events:none}
+
+  /* ---------- 第一页 ---------- */
+  .card{
+    width:100%;max-width:360px;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.9);
+    border-radius:28px;
+    padding:34px 26px 28px;
+    box-shadow:0 18px 50px -18px rgba(214,110,140,.45), 0 2px 8px rgba(214,110,140,.08);
+    text-align:center;
+    animation:cardIn .9s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes cardIn{
+    from{opacity:0;transform:translateY(26px) scale(.97)}
+    to{opacity:1;transform:none}
+  }
+  .eyebrow{
+    margin:0 0 16px;font-size:11px;letter-spacing:.28em;
+    color:#d98aa3;text-transform:uppercase;font-weight:600;
+  }
+  .card h1{
+    margin:0 0 26px;font-size:22px;line-height:1.55;
+    font-weight:600;letter-spacing:.01em;
+  }
+  .field{position:relative;margin-bottom:14px}
+  .field input{
+    width:100%;height:54px;
+    border:1.5px solid #ffd3df;border-radius:16px;
+    background:#fff;color:var(--deep);
+    font-size:17px;font-family:inherit;
+    text-align:center;
+    padding:0 16px;outline:none;
+    transition:border-color .25s, box-shadow .25s;
+    -webkit-appearance:none;
+  }
+  .field input::placeholder{color:#e2b7c5}
+  .field input:focus{border-color:var(--pink);box-shadow:0 0 0 4px rgba(255,92,138,.12)}
+  .field.shake{animation:shake .4s}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-7px)}
+    40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)}
+    80%{transform:translateX(3px)}
+  }
+  button{font-family:inherit;cursor:pointer;border:none}
+
+  .primary{
+    width:100%;height:54px;border-radius:16px;
+    background:linear-gradient(135deg,#ff7fa3,#ff4f82);
+    color:#fff;font-size:16.5px;font-weight:600;letter-spacing:.04em;
+    box-shadow:0 10px 24px -10px rgba(255,79,130,.85);
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .18s ease, box-shadow .25s;
+  }
+  .primary:active{transform:scale(.975);box-shadow:0 6px 16px -8px rgba(255,79,130,.9)}
+  .primary span{display:inline-block;transition:transform .25s}
+  .primary:hover span{transform:translateX(4px)}
+
+  .hint{margin:18px 0 0;font-size:12px;color:#c39aa8;letter-spacing:.06em}
+
+  /* ---------- 第二页 ---------- */
+  #confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+  .letter{
+    width:100%;max-width:380px;
+    text-align:center;position:relative;z-index:3;
+    opacity:0;transform:translateY(18px);
+  }
+  .letter.show{animation:letterIn 1s cubic-bezier(.16,1,.3,1) .1s both}
+  @keyframes letterIn{
+    from{opacity:0;transform:translateY(24px) scale(.98)}
+    to{opacity:1;transform:none}
+  }
+  .to{
+    margin:0 0 18px;font-size:13px;letter-spacing:.22em;
+    color:#c9889d;font-weight:500;
+  }
+  .to b{color:var(--pink);font-weight:600;letter-spacing:.06em}
+  .big{
+    margin:0 0 22px;font-size:30px;line-height:1.5;
+    font-weight:700;letter-spacing:.01em;
+    color:#3f2630;
+  }
+  .big .cursor{
+    display:inline-block;width:2px;height:1em;vertical-align:-.12em;
+    background:var(--pink);margin-left:2px;animation:blink .9s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0}}
+  .body{
+    margin:0 auto;max-width:300px;
+    font-size:15px;line-height:2;color:#6b4a56;
+    white-space:pre-line;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .8s ease, transform .8s ease;
+  }
+  .body.show{opacity:1;transform:none}
+  .sign{
+    margin:26px 0 0;font-size:13px;color:#b98a9b;letter-spacing:.1em;
+    opacity:0;transition:opacity .8s ease .3s;
+  }
+  .sign.show{opacity:1}
+
+  .actions{
+    margin:32px auto 0;display:flex;gap:12px;justify-content:center;
+    align-items:center;flex-wrap:wrap;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .7s ease .5s, transform .7s ease .5s;
+  }
+  .actions.show{opacity:1;transform:none}
+  .yes{
+    height:50px;padding:0 30px;border-radius:26px;
+    background:linear-gradient(135deg,#ff7fa3,#ff4f82);color:#fff;
+    font-size:15.5px;font-weight:600;letter-spacing:.05em;
+    box-shadow:0 12px 26px -12px rgba(255,79,130,.9);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), font-size .3s;
+  }
+  .yes:active{transform:scale(.96)}
+  .no{
+    height:46px;padding:0 20px;border-radius:23px;
+    background:rgba(255,255,255,.75);color:#a97f8e;
+    font-size:14px;border:1px solid rgba(222,180,194,.7);
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1), font-size .35s, opacity .35s, padding .35s, height .35s;
+  }
+  .pulse{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.045)}
+  }
+  .final{
+    animation:finalIn .8s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes finalIn{
+    from{opacity:0;transform:scale(.94)}
+    to{opacity:1;transform:none}
+  }
+  .hidden{display:none!important}
+  @media (max-height:620px){
+    .card{padding:26px 22px 22px}
+    .card h1{font-size:19px;margin-bottom:20px}
+    .big{font-size:25px}
+    .body{font-size:14px;line-height:1.9}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+
+<div id="heartsBg" aria-hidden="true"></div>
+
+<!-- 第一页：输入名字 -->
+<section class="stage" id="stage1">
+  <div class="card">
+    <p class="eyebrow">To You</p>
+    <h1 id="introTitle"></h1>
+    <div class="field" id="nameField">
+      <input id="nameInput" type="text" placeholder="写下你的名字" maxlength="12"
+             autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+    </div>
+    <button class="primary" id="goBtn">打开这封信 <span>→</span></button>
+    <p class="hint">只写给你一个人看</p>
+  </div>
+</section>
+
+<!-- 第二页：表白 -->
+<section class="stage hide" id="stage2">
+  <canvas id="confetti"></canvas>
+  <div class="letter" id="letter">
+    <p class="to">给 <b id="toName"></b></p>
+    <h2 class="big"><span id="typed"></span><span class="cursor" id="cursor"></span></h2>
+    <p class="body" id="bodyText"></p>
+    <p class="sign" id="signText"></p>
+    <div class="actions" id="actions">
+      <button class="yes" id="yesBtn">我也喜欢你</button>
+      <button class="no" id="noBtn">让我想想</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ============================================================
+   想改内容，只改这里就行
+   ============================================================ */
+var CONFIG = {
+  // 第一页标题（\n 换行）
+  intro: "在打开之前\n先告诉我你的名字",
+
+  // 第二页第一句（会一个字一个字打出来）
+  headline: "我喜欢你",
+
+  // 正文（\n 换行）
+  body: "这件事我想了很久，\n还是想认认真真地告诉你。\n\n不是一时兴起，\n是每次看到你，\n心跳都会慢半拍的那种喜欢。",
+
+  // 落款
+  sign: "—— 一个偷偷喜欢你的人",
+
+  // 点「我也喜欢你」之后的回复
+  answer: "那说好了，\n以后的路一起走。",
+
+  // 「让我想想」按钮的逃脱台词
+  avoid: ["让我想想", "真的不考虑吗", "再想想嘛", "好吧……"]
+};
+/* ============================================================ */
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+
+  // URL 参数：?to=名字 可预填，?from=署名 可覆盖落款
+  var qs = new URLSearchParams(location.search);
+  var presetName = (qs.get("to") || "").slice(0, 12);
+  if (qs.get("from")) CONFIG.sign = "—— " + qs.get("from").slice(0, 20);
+
+  // 第一页标题
+  $("introTitle").innerHTML = CONFIG.intro.replace(/\n/g, "<br>");
+
+  // 背景飘心
+  (function hearts() {
+    var box = $("heartsBg");
+    var glyphs = ["♥", "♥", "♥", "❀", "✿"];
+    for (var i = 0; i < 14; i++) {
+      var el = document.createElement("i");
+      el.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+      el.style.left = (Math.random() * 96 + 2) + "%";
+      el.style.fontSize = (10 + Math.random() * 16) + "px";
+      el.style.animationDuration = (11 + Math.random() * 12) + "s";
+      el.style.animationDelay = (-Math.random() * 20) + "s";
+      el.style.color = Math.random() > .5 ? "#ffb3c9" : "#ffd0dd";
+      box.appendChild(el);
+    }
+  })();
+
+  var input = $("nameInput");
+  if (presetName) input.value = presetName;
+
+  var started = false;
+  function start() {
+    if (started) return;
+    var name = input.value.trim().replace(/\s+/g, " ");
+    if (!name) {
+      var f = $("nameField");
+      f.classList.remove("shake");
+      void f.offsetWidth;
+      f.classList.add("shake");
+      input.focus();
+      return;
+    }
+    started = true;
+    try { sessionStorage.setItem("crush_name", name); } catch (e) {}
+
+    $("stage1").classList.add("hide");
+    var s2 = $("stage2");
+    s2.classList.remove("hide");
+    $("toName").textContent = name;
+
+    setTimeout(function () {
+      $("letter").classList.add("show");
+      typeHeadline(function () {
+        $("bodyText").textContent = CONFIG.body;
+        $("bodyText").classList.add("show");
+        $("signText").textContent = CONFIG.sign;
+        $("signText").classList.add("show");
+        setTimeout(function () { $("actions").classList.add("show"); }, 500);
+      });
+    }, 380);
+    setTimeout(function () { $("stage1").classList.add("hidden"); }, 1000);
+  }
+
+  function typeHeadline(done) {
+    var text = CONFIG.headline, i = 0, out = $("typed");
+    (function step() {
+      if (i <= text.length) {
+        out.textContent = text.slice(0, i);
+        i++;
+        setTimeout(step, i < 3 ? 220 : 130);
+      } else {
+        $("cursor").style.display = "none";
+        if (done) done();
+      }
+    })();
+  }
+
+  $("goBtn").addEventListener("click", start);
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); start(); }
+  });
+
+  // 「让我想想」会躲
+  var noBtn = $("noBtn"), yesBtn = $("yesBtn"), dodges = 0;
+  var MESSAGES = CONFIG.avoid;
+  noBtn.addEventListener("click", function () {
+    dodges++;
+    if (dodges >= MESSAGES.length) {
+      noBtn.style.opacity = "0";
+      noBtn.style.transform = "scale(.5)";
+      setTimeout(function () { noBtn.style.display = "none"; }, 350);
+      yesBtn.style.transform = "scale(1.1)";
+      setTimeout(function () { yesBtn.style.transform = ""; }, 400);
+      return;
+    }
+    noBtn.textContent = MESSAGES[dodges];
+    noBtn.style.fontSize = Math.max(11, 14 - dodges * 1.4) + "px";
+    noBtn.style.padding = "0 " + Math.max(10, 20 - dodges * 4) + "px";
+    var dx = (Math.random() > .5 ? 1 : -1) * (18 + Math.random() * 40);
+    var dy = (Math.random() - .5) * 30;
+    noBtn.style.transform = "translate(" + dx + "px," + dy + "px)";
+    yesBtn.style.transform = "scale(" + (1 + dodges * 0.03) + ")";
+  });
+
+  // 「我也喜欢你」→ 换文案 + 撒花
+  yesBtn.addEventListener("click", function () {
+    yesBtn.disabled = true;
+    $("actions").style.opacity = "0";
+    setTimeout(function () { $("actions").style.display = "none"; }, 400);
+
+    var h = document.querySelector(".big");
+    var b = $("bodyText");
+    var heads = ["我也喜欢你", "那就说好了", "❤"];
+    h.innerHTML = '<span id="typed"></span><span class="cursor" style="display:none"></span>';
+
+    var line = "💗 我们在一起吧";
+    h.textContent = line;
+    h.classList.remove("final"); void h.offsetWidth; h.classList.add("final");
+
+    b.textContent = CONFIG.answer;
+    b.classList.remove("show"); void b.offsetWidth; b.classList.add("show");
+    $("signText").classList.add("show");
+    confettiBurst();
+    setTimeout(confettiBurst, 450);
+  });
+
+  /* ---------- 撒花 ---------- */
+  var cvs = $("confetti"), ctx = cvs.getContext("2d"), parts = [], raf = null;
+  function sizeCanvas() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cvs.width = innerWidth * dpr;
+    cvs.height = innerHeight * dpr;
+    cvs.style.width = innerWidth + "px";
+    cvs.style.height = innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  sizeCanvas();
+  window.addEventListener("resize", sizeCanvas);
+
+  var COLORS = ["#ff5c8a", "#ff9ec0", "#ffd166", "#8ecae6", "#c8b6ff", "#ff8f6b"];
+
+  function confettiBurst() {
+    var cx = innerWidth / 2, cy = innerHeight * 0.52;
+    for (var i = 0; i < 90; i++) {
+      var a = Math.random() * Math.PI * 2;
+      var sp = 3 + Math.random() * 9;
+      parts.push({
+        x: cx, y: cy,
+        vx: Math.cos(a) * sp,
+        vy: Math.sin(a) * sp - 3,
+        r: 3 + Math.random() * 5,
+        rot: Math.random() * 6.28,
+        vr: (Math.random() - .5) * .3,
+        c: COLORS[(Math.random() * COLORS.length) | 0],
+        life: 1,
+        heart: Math.random() > .72
+      });
+    }
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (var i = parts.length - 1; i >= 0; i--) {
+      var p = parts[i];
+      p.vy += 0.22;
+      p.vx *= 0.995;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      p.life -= 0.008;
+      if (p.life <= 0 || p.y > innerHeight + 60) { parts.splice(i, 1); continue; }
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.c;
+      if (p.heart) {
+        ctx.font = (p.r * 3) + "px serif";
+        ctx.fillText("♥", -p.r, p.r);
+      } else {
+        ctx.fillRect(-p.r, -p.r * 0.55, p.r * 2, p.r * 1.1);
+      }
+      ctx.restore();
+    }
+    if (parts.length) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      raf = null;
+    }
+  }
+})();
+</script>
+</body>
+</html>
